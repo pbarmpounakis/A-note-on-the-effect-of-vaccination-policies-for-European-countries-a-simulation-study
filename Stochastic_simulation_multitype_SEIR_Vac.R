@@ -2,6 +2,7 @@
 #We will use a multitype SEIR model accounting for vaccination states for COVID-19 data in Greece
 #We include 2 scenarios
 #scenario 1, susceptible are given the second dose after 3 months of the first dose 
+#scenario 2, susceptible are given the second dose on the recommended timeline
 
 
 
