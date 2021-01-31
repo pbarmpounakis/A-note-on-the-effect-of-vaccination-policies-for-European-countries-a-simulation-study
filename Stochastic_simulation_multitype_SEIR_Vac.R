@@ -6,8 +6,7 @@
 
 
 
-
-Stoch_multi_SEIR<-function(time,parameters,initials){
+Stoch_multi_SEIR<-function(time_sim,parameters,initials){
   #'--------------
   #'This function performs forward simulation for the Covid-19, allowing for the implementation of Vaccination strategies
   #'We will use a stochastic multitype SEIR model, also including vaccination states (we can call it SVEIR)
@@ -15,11 +14,11 @@ Stoch_multi_SEIR<-function(time,parameters,initials){
   #'We include 2 scenarios for the vaccinations
   #'Scenario 1: susceptibles are given the second dose after 3 periods of the first dose,
   #'having a  drop in immunity each month (length of the period and the drop in immunity are user defined)
-  #'Scenario 2: susceptibles are given the second dose on the recommended timeline
+  #'Scenario 2: susceptibles are given the second dose on the recommended time_simline
   #'
   #'
   #'-----------------
-  #' 'time'=length of time we want to run the simulation forward
+  #' 'time_sim'=length of time_sim we want to run the simulation forward
   #' -----------------
   #' 'parameters'= user defined parameters list including: transimission matrix, rates to change from different states,
   #' number of groups, population at each group,
@@ -37,62 +36,62 @@ Stoch_multi_SEIR<-function(time,parameters,initials){
   if (is.null(initials)) {
     stop("undefined 'initials'")
   }
-  if (is.null(time)) {
-    stop("undefined 'time'")
+  if (is.null(time_sim)) {
+    stop("undefined 'time_sim'")
   }
   
   lambda<-parameters$transm_rates#transimission matrix
   N<-parameters$N#number of population in each group
   n_groups<-parameters$n_groups#number of groups
-  vac_daily1<-parameters$vac_daily1#matrix(time,n_groups) containg for each day and each group the number of people vaccinated at scenario 1
-  vac_daily2<-parameters$vac_daily2#matrix(time,n_groups) containg for each day and each group the number of people vaccinated at scenario 2
+  vac_daily1<-parameters$vac_daily1#matrix(time_sim,n_groups) containg for each day and each group the number of people vaccinated at scenario 1
+  vac_daily2<-parameters$vac_daily2#matrix(time_sim,n_groups) containg for each day and each group the number of people vaccinated at scenario 2
   days_for_immun<-parameters$days_for_immun#days for immunity after each dose
   days_immun_drop<-parameters$days_immun_drop#days for each immunity drop
-  days_V22_to_V23<-parameters$days_V22_to_V23#days to 'full' immunity after the second vaccine dose in scenario 2(reqular dosing timeline)
+  days_V22_to_V23<-parameters$days_V22_to_V23#days to 'full' immunity after the second vaccine dose in scenario 2(reqular dosing time_simline)
   immun1<-parameters$immun1#immunity at states V12,V22
   immun2<-parameters$immun2#immunity at states V13
   immun3<-parameters$immun3#immunity at states V14
   immun4<-parameters$immun4#immunity at states V15
   immun_final<-parameters$immun_final#immunity at states V16,V23
-  #we consider fixed times for E->I and I->R
-  mean_time_E<-ceiling(1/parameters$rateEtoI)#mean time an individual remains at state E(integer required)
-  mean_time_I<-ceiling(1/parameters$rateItoR)#mean time an individual remains at state I(integer required)
+  #we consider fixed time_sims for E->I and I->R
+  mean_time_E<-ceiling(1/parameters$rateEtoI)#mean time_sim an individual remains at state E(integer required)
+  mean_time_I<-ceiling(1/parameters$rateItoR)#mean time_sim an individual remains at state I(integer required)
   
   #define matrices for each state
-  S<-matrix(as.integer(),time,n_groups)
-  E<-matrix(as.integer(),time,n_groups)
-  I<-matrix(as.integer(),time,n_groups)
-  R<-matrix(as.integer(),time,n_groups)
-  V11<-matrix(as.integer(),time,n_groups)
-  V12<-matrix(as.integer(),time,n_groups)
-  V13<-matrix(as.integer(),time,n_groups)
-  V14<-matrix(as.integer(),time,n_groups)
-  V15<-matrix(as.integer(),time,n_groups)
-  V16<-matrix(as.integer(),time,n_groups)
-  V21<-matrix(as.integer(),time,n_groups)
-  V22<-matrix(as.integer(),time,n_groups)
-  V23<-matrix(as.integer(),time,n_groups)
+  S<-matrix(as.integer(),time_sim,n_groups)
+  E<-matrix(as.integer(),time_sim,n_groups)
+  I<-matrix(as.integer(),time_sim,n_groups)
+  R<-matrix(as.integer(),time_sim,n_groups)
+  V11<-matrix(as.integer(),time_sim,n_groups)
+  V12<-matrix(as.integer(),time_sim,n_groups)
+  V13<-matrix(as.integer(),time_sim,n_groups)
+  V14<-matrix(as.integer(),time_sim,n_groups)
+  V15<-matrix(as.integer(),time_sim,n_groups)
+  V16<-matrix(as.integer(),time_sim,n_groups)
+  V21<-matrix(as.integer(),time_sim,n_groups)
+  V22<-matrix(as.integer(),time_sim,n_groups)
+  V23<-matrix(as.integer(),time_sim,n_groups)
   
   #new infections each day from every group
-  new_infectionsTotal<-matrix(0,time,n_groups)
-  new_infectionsS<-matrix(0,time,n_groups)
-  new_infectionsV11<-matrix(0,time,n_groups)
-  new_infectionsV12<-matrix(0,time,n_groups)
-  new_infectionsV13<-matrix(0,time,n_groups)
-  new_infectionsV14<-matrix(0,time,n_groups)
-  new_infectionsV15<-matrix(0,time,n_groups)
-  new_infectionsV16<-matrix(0,time,n_groups)
-  new_infectionsV21<-matrix(0,time,n_groups)
-  new_infectionsV22<-matrix(0,time,n_groups)
-  new_infectionsV23<-matrix(0,time,n_groups)
+  new_infectionsTotal<-matrix(0,time_sim,n_groups)
+  new_infectionsS<-matrix(0,time_sim,n_groups)
+  new_infectionsV11<-matrix(0,time_sim,n_groups)
+  new_infectionsV12<-matrix(0,time_sim,n_groups)
+  new_infectionsV13<-matrix(0,time_sim,n_groups)
+  new_infectionsV14<-matrix(0,time_sim,n_groups)
+  new_infectionsV15<-matrix(0,time_sim,n_groups)
+  new_infectionsV16<-matrix(0,time_sim,n_groups)
+  new_infectionsV21<-matrix(0,time_sim,n_groups)
+  new_infectionsV22<-matrix(0,time_sim,n_groups)
+  new_infectionsV23<-matrix(0,time_sim,n_groups)
   #individuals moving from one vaccinated state to another
-  V11toV12<-matrix(0,time,n_groups)
-  V12toV13<-matrix(0,time,n_groups)
-  V13toV14<-matrix(0,time,n_groups)
-  V14toV15<-matrix(0,time,n_groups)
-  V15toV16<-matrix(0,time,n_groups)
-  V21toV22<-matrix(0,time,n_groups)
-  V22toV23<-matrix(0,time,n_groups)
+  V11toV12<-matrix(0,time_sim,n_groups)
+  V12toV13<-matrix(0,time_sim,n_groups)
+  V13toV14<-matrix(0,time_sim,n_groups)
+  V14toV15<-matrix(0,time_sim,n_groups)
+  V15toV16<-matrix(0,time_sim,n_groups)
+  V21toV22<-matrix(0,time_sim,n_groups)
+  V22toV23<-matrix(0,time_sim,n_groups)
   #initialization
   for(j in 1:n_groups){
     S[1,j]<-initials[paste0('S',j)]
@@ -110,14 +109,14 @@ Stoch_multi_SEIR<-function(time,parameters,initials){
     V23[1,j]<-initials[paste0('V23',j)]
   }
   
-  for(i in 2:time){
+  for(i in 2:time_sim){
     for(j in 1:n_groups){
       
       #new infections each day
       #people in S and V11 and V21 are consider fully susceptible
       #people in other states of vaccination have some partial immunity, 
       #for this reason we multiply the probability of meeting an individual with (1-immunity)
-      #R ifelse function was used to not allow for negative values in the probabilities of the binomials(it happens sometimes with really small values due to computer accuracy i think)
+      #R ifelse function was used to not allow for negative values in the probabilities of the binomials(it happens sometime_sims with really small values due to computer accuracy i think)
       new_infectionsS[i,j]<-rbinom(1,as.integer(S[i-1,j]),ifelse(1-exp(-lambda[j,]%*%(I[i-1,]/N))>0,1-exp(-lambda[j,]%*%(I[i-1,]/N)),0))
       new_infectionsV11[i,j]<-rbinom(1,as.integer(V11[i-1,j]),ifelse(1-exp(-lambda[j,]%*%(I[i-1,]/N))>0,1-exp(-lambda[j,]%*%(I[i-1,]/N)),0))
       new_infectionsV12[i,j]<-rbinom(1,as.integer(V12[i-1,j]),ifelse((1-immun1)*(1-exp(-lambda[j,]%*%(I[i-1,]/N)))>0,(1-immun1)*(1-exp(-lambda[j,]%*%(I[i-1,]/N))),0))
@@ -143,7 +142,7 @@ Stoch_multi_SEIR<-function(time,parameters,initials){
       
       S[i,j]<-S[i-1,j]-new_infectionsS[i,j]-(vac_daily1[i,j]+vac_daily2[i,j])
       #stopping criterion if for any group the number of susceptible reaches zero
-      #if the criterion is used the function will print the time and the group
+      #if the criterion is used the function will print the time_sim and the group
       #useful if we have not calculated the vaccinations properly 
       #and it avoids at the next step the function rbinom to have negative numbers,
       #because an error will be returned and the simulation won't be saved
@@ -336,7 +335,7 @@ Stoch_multi_SEIR<-function(time,parameters,initials){
         
         
       }
-      #scenario 2, people that will get the second dose in a regular timeframe
+      #scenario 2, people that will get the second dose in a regular time_simframe
       if(i<=days_for_immun){
         V21[i,j]<-ifelse(V21[i-1,j]+vac_daily2[i,j]-new_infectionsV21[i,j]>0,V21[i-1,j]+vac_daily2[i,j]-new_infectionsV21[i,j],0)
         V22[i,j]<-ifelse(V22[i-1,j]-new_infectionsV22[i,j]>0,V22[i-1,j]-new_infectionsV22[i,j],0)
@@ -381,35 +380,58 @@ Stoch_multi_SEIR<-function(time,parameters,initials){
   
 }
 
-Stoch_multi_SEIR_simulations<-function(time,parameters,initials,simulations){
+Stoch_multi_SEIR_simulations<-function(time_sim,parameters,initials,simulations,uncertainty_interval=c(5,95)){
   #'function to perform multiple simulations(default=10) for the stochastic multitype SVEIR model
   #' same parameters as function 'Stoch_multi_SEIR' with the addition of
   #'------------
   #'  'simulations'= number of simulations to perform
   #'------------
   #'returns a dataframe just like function 'Stoch_multi_SEIR' with the means of every simulation
-  df<-list()
-  df_means<-list()
-  stop_time_vector<-c()
-  states<-c("S","E","I","R","V11","V12","V13","V14","V15","V16","V21","V22","V23",'new_infectionsTotal')
+  
   n_groups<-parameters$n_groups#number of groups
-
-  for(i in 1:simulations){
-    df[[i]]<-Stoch_multi_SEIR(time,parameters,initials)
-    #find if any simulations finished early due to stopping criterion
-  print(paste0('simulation ',i,' finished',sep=''))
+  sim<-list()
+  results<-list()
+  results_median<-list()
+  results_lower<-list()
+  results_upper<-list()
+  
+  states<-c("S","E","I","R","V11","V12","V13","V14","V15","V16","V21","V22","V23",'new_infectionsTotal')
+  states_with_groups<-matrix(as.character(),length(states),n_groups)
+  for(j in 1:n_groups){
+    states_with_groups[,j]<-paste0(states,j)
+  }
+  for(state in states){
+    results_median[[state]]<-matrix(as.integer(),time_sim,n_groups)
+    results_lower[[state]]<-matrix(as.integer(),time_sim,n_groups)
+    results_upper[[state]]<-matrix(as.integer(),time_sim,n_groups)
+    
+  }
+  for(state in states_with_groups){
+    results[[state]]<-matrix(as.integer(),time_sim,simulations)
   }
   
-    for(j in 1:length(states)){
-    sum_state<-matrix(0,time,n_groups)
-for(i in 1:simulations){
-  sum_state<-sum_state+df[[i]][[j]]
-}
-
-df_means[[j]]<-floor(sum_state/simulations)
-  } 
+  for(i in 1:simulations){
+    sim<-Stoch_multi_SEIR(time_sim,parameters,initials)
+    print(paste0('simulation ',i,' finished',sep=''))
     
-  names(df_means)<-states
-return(df_means)
+    for(j in 1:length(states)){
+      
+      for(k in 1:n_groups){
+        results[[states_with_groups[j,k]]][,i]<-sim[[states[j]]][,k]
+      }
+    }
+  }
+  
+  for(j in 1:length(states)){
+    
+    for(k in 1:n_groups){
+      
+      results_median[[states[j]]][,k]<-apply(results[[states_with_groups[j,k]]],1,median)
+      results_upper[[states[j]]][,k]<-apply(results[[states_with_groups[j,k]]],1,quantile,probs=0.95)
+      results_lower[[states[j]]][,k]<-apply(results[[states_with_groups[j,k]]],1,quantile,probs=0.05)
+      
+    }
+  }
+  
+  return(list(results_median,results_lower,results_upper))
 }
-
