@@ -1,6 +1,6 @@
 # A note on the effect of vaccination policies for European countries: a simulation study
 
-Barmpounakis P.<sup>1, Demiris N.1, Kontoyiannis I.2, Sypsa V.A.3 and Pavlakis G.4 
+Barmpounakis P.<sup>1 , Demiris N.<sup>1 , Kontoyiannis I.<sup>2 , Sypsa V.A.<sup>3 and Pavlakis G.<sup>4 
 
 1Athens University of Economics and Business,2University of Cambridge, UK, 3National and Kapodistrian University of Athens, 4National Cancer Institute, USA
 
