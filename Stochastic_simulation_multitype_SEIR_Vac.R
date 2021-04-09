@@ -1,7 +1,7 @@
 #-----------------
 #We will use a multitype SEIR model accounting for vaccination states for COVID-19 data in Greece
 #We include 2 scenarios
-#scenario 1, susceptible are given the second dose after 3 months of the first dose 
+#scenario 1, susceptible are given the second dose after 3 periods(user defined) of the first dose 
 #scenario 2, susceptible are given the second dose on the recommended timeline
 
 
@@ -14,7 +14,7 @@ Stoch_multi_SEIR<-function(time_sim,parameters,initials){
   #'We include 2 scenarios for the vaccinations
   #'Scenario 1: susceptibles are given the second dose after 3 periods of the first dose,
   #'having a  drop in immunity each month (length of the period and the drop in immunity are user defined)
-  #'Scenario 2: susceptibles are given the second dose on the recommended time_simline
+  #'Scenario 2: susceptibles are given the second dose on the recommended time_simline(1 period user defined)
   #'
   #'
   #'-----------------
