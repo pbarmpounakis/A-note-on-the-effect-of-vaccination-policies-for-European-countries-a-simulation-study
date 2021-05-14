@@ -1,4 +1,4 @@
-# A note on the effect of vaccination policies for European countries: a simulation study
+# Evaluating the effects of vaccine rollout policies in European countries: A simulation study
 
 Barmpounakis P.<sup>1</sup> ,Demiris N.<sup>1</sup>, Kontoyiannis I.<sup>2</sup>, Sypsa V.A.<sup>3</sup> and Pavlakis G.<sup>4</sup> 
 
