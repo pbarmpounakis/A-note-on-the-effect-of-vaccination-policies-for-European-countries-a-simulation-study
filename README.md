@@ -1,6 +1,6 @@
 # Evaluating the effects of vaccine rollout policies in European countries: A simulation study
 
-Barmpounakis P.<sup>1</sup> ,Demiris N.<sup>1</sup>, Kontoyiannis I.<sup>2</sup>, Pavlakis G.<sup>3</sup>and  Sypsa V.A.<sup>4</sup>  
+Barmpounakis P.<sup>1</sup> ,Demiris N.<sup>1</sup>, Kontoyiannis I.<sup>2</sup>, Pavlakis G.<sup>3</sup> and Sypsa V.A.<sup>4</sup>  
 
 <sup>1</sup>Athens University of Economics and Business,<sup>2</sup>University of Cambridge, UK, <sup>3</sup>National Cancer Institute, USA, <sup>4</sup>National and Kapodistrian 
 
